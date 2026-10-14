@@ -1,43 +1,32 @@
 package com.example.ytub
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
-import android.widget.RelativeLayout
+import android.provider.Settings
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    private var lastClickTime: Long = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Удерживаем процессор/экран активным и гасим системные панели
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        )
-
-        // Выкручиваем яркость подсветки в ноль (для OLED физически отключает пиксели)
-        val layoutParams = window.attributes
-        layoutParams.screenBrightness = 0.0f
-        window.attributes = layoutParams
-
         setContentView(R.layout.activity_main)
 
-        // Двойной тап для разблокировки экрана
-        val rootLayout = findViewById<RelativeLayout>(R.id.rootLayout)
-        rootLayout.setOnClickListener {
-            val clickTime = System.currentTimeMillis()
-            if (clickTime - lastClickTime < 400) {
-                finish()
+        val btn = findViewById<Button>(R.id.btnStartOverlay)
+        btn.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+                startActivity(intent)
+                Toast.makeText(this, "Дайте разрешение 'Отображение поверх других окон'", Toast.LENGTH_LONG).show()
+            } else {
+                startService(Intent(this, OverlayService::class.java))
+                moveTaskToBack(true) // Сворачиваем приложение, оставляя службу активной
             }
-            lastClickTime = clickTime
         }
     }
 }
