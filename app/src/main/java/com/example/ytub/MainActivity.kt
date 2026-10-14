@@ -1,39 +1,43 @@
 package com.example.ytub
 
-import android.content.Intent
 import android.os.Bundle
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.view.View
+import android.view.WindowManager
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var webView: WebView
+    private var lastClickTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Удерживаем экран активным и скрываем системные панели
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            or View.SYSTEM_UI_FLAG_FULLSCREEN
+            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        )
+
+        // Минимальная яркость для экономии энергии на OLED
+        val layoutParams = window.attributes
+        layoutParams.screenBrightness = 0.01f
+        window.attributes = layoutParams
+
         setContentView(R.layout.activity_main)
 
-        webView = findViewById(R.id.webView)
-        val settings: WebSettings = webView.settings
-        settings.javaScriptEnabled = true
-        settings.domStorageEnabled = true
-        settings.mediaPlaybackRequiresUserGesture = false
-        settings.userAgentString = "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
-
-        webView.webViewClient = WebViewClient()
-        webView.loadUrl("https://m.youtube.com")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        val serviceIntent = Intent(this, BackgroundPlayerService::class.java)
-        startForegroundService(serviceIntent)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val serviceIntent = Intent(this, BackgroundPlayerService::class.java)
-        stopService(serviceIntent)
+        // Двойной тап для разблокировки
+        val rootLayout = findViewById<RelativeLayout>(R.id.rootLayout)
+        rootLayout.setOnClickListener {
+            val clickTime = System.currentTimeMillis()
+            if (clickTime - lastClickTime < 400) {
+                finish()
+            }
+            lastClickTime = clickTime
+        }
     }
 }

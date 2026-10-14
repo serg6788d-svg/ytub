@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.blackscreen"
+    namespace = "com.example.ytub"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.blackscreen"
+        applicationId = "com.example.ytub"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
