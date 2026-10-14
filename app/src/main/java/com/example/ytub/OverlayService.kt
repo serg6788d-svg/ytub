@@ -38,7 +38,7 @@ class OverlayService : Service() {
             PixelFormat.TRANSLUCENT
         )
         params.gravity = Gravity.TOP or Gravity.START
-        params.screenBrightness = 0.0f // Гасим подсветку в ноль
+        params.screenBrightness = 0.0f
 
         overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null)
         
@@ -46,7 +46,7 @@ class OverlayService : Service() {
         rootLayout?.setOnClickListener {
             val clickTime = System.currentTimeMillis()
             if (clickTime - lastClickTime < 400) {
-                stopSelf() // Выгружаем оверлей по двойному тапу
+                stopSelf()
             }
             lastClickTime = clickTime
         }

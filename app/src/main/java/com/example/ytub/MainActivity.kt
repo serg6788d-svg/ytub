@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Дайте разрешение 'Отображение поверх других окон'", Toast.LENGTH_LONG).show()
             } else {
                 startService(Intent(this, OverlayService::class.java))
-                moveTaskToBack(true) // Сворачиваем приложение, оставляя службу активной
+                moveTaskToBack(true)
             }
         }
     }
