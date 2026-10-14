@@ -32,7 +32,7 @@ class BackgroundPlayerService : Service() {
     private fun createNotificationChannel() {
         val serviceChannel = NotificationChannel(
             CHANNEL_ID,
-            "Ytub Background Service Channel",
+            "YouTube Background Service Channel",
             NotificationManager.IMPORTANCE_LOW
         )
         val manager = getSystemService(NotificationManager::class.java)
